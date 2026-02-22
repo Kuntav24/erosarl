@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERO SARL | Solutions Professionnelles de Manipulation de Fonds</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --vert: #138A36;
+            --jaune: #C49A2C;
+            --blanc: #F4F6F4;
+            --gris: #EEF1EE;
+            --ombre: rgba(19,138,54,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--blanc);
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* Loader */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--blanc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--gris);
+            border-top-color: var(--vert);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* HEADER */
+        header {
+            position: fixed;
+            width: 100%;
+            background: var(--blanc);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 8%;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        header.scrolled {
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            position: relative;
+        }
+
+        .logo-container img {
+            height: 65px;
+        }
+
+        /* halo doux */
+        .logo-container::after {
+            content: "";
+            position: absolute;
+            inset: -12px;
+            background: radial-gradient(circle, rgba(19,138,54,0.25), transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        /* Menu burger */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--vert);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--vert);
+            text-decoration: none;
+            margin-left: 35px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        nav a::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            left: 0;
+            bottom: -5px;
+            background: var(--jaune);
+            transition: 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(19,138,54,0.88), rgba(19,138,54,0.88)),
+            url('https://images.unsplash.com/photo-1581093588401-22d8c77a10e3');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            animation: fadeUp 1.5s ease;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+
+        .btn {
+            background: var(--jaune);
+            padding: 15px 35px;
+            border-radius: 40px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 30px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 120px 8%;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: 1s;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section h2 {
+            text-align: center;
+            margin-bottom: 70px;
+            font-size: 32px;
+            color: var(--vert);
+        }
+
+        /* PRODUITS */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px var(--ombre);
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-12px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            padding: 20px 20px 10px;
+            color: var(--vert);
+        }
+
+        .card p {
+            padding: 0 20px 20px;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .card .btn-devis {
+            background: var(--jaune);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 20px 25px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .card .btn-devis:hover {
+            background: #a8821f;
+        }
+
+        /* SERVICES */
+        .services {
+            background: var(--gris);
+            border-radius: 20px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .service-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px var(--ombre);
+            transition: 0.3s;
+        }
+
+        .service-box:hover {
+            transform: translateY(-8px);
+        }
+
+        .service-box h3 {
+            color: var(--vert);
+            margin-bottom: 15px;
+        }
+
+        /* POURQUOI NOUS CHOISIR */
+        .why-us {
+            background: white;
+            border-radius: 20px;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            text-align: center;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .why-item {
+            padding: 30px;
+        }
+
+        .why-icon {
+            font-size: 40px;
+            color: var(--jaune);
+            margin-bottom: 15px;
+        }
+
+        .why-item h3 {
+            color: var(--vert);
+            margin-bottom: 10px;
+        }
+
+        /* CONTACT */
+        .contact-form {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .contact-form input,
+        .contact-form select,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .contact-form input:focus,
+        .contact-form select:focus,
+        .contact-form textarea:focus {
+            outline: 2px solid var(--vert);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--vert);
+            color: white;
+            padding: 60px 8% 20px;
+            margin-top: 80px;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .footer-grid h3 {
+            color: var(--jaune);
+            margin-bottom: 20px;
+        }
+
+        .footer-grid p {
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .footer-grid a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-grid a:hover {
+            color: var(--jaune);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* BOUTONS FLOTTANTS */
+        .floating-buttons {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+        }
+
+        .btn-call {
+            background: var(--vert);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {opacity:0; transform:translateY(40px);}
+            to {opacity:1; transform:translateY(0);}
+        }
+
+        /* RESPONSIVE */
+        @media(max-width: 768px){
+            .hero h1 { 
+                font-size: 32px; 
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+            
+            nav {
+                position: fixed;
+                top: 95px;
+                left: -100%;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 30px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                transition: 0.3s;
+            }
+            
+            nav.active {
+                left: 0;
+            }
+            
+            nav a {
+                margin: 15px 0;
+                display: block;
+                margin-left: 0;
+            }
+
+            .products {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div class="loader-wrapper" id="loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header id="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="ERO SARL" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2265%22 height=%2265%22 viewBox=%220 0 65 65%22><rect width=%2265%22 height=%2265%22 fill=%22%23138A36%22/><text x=%2210%22 y=%2245%22 fill=%22%23C49A2C%22 font-size=%2230%22>ERO</text></svg>'">
+        </div>
+        <nav>
+            <a href="#produits">Produits</a>
+            <a href="#services">Services</a>
+            <a href="#pourquoi">Pourquoi nous</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Solutions Professionnelles de Manipulation de Fonds</h1>
+            <p>Fourniture, Installation & Service Après-Vente d'équipements financiers</p>
+            <a href="https://wa.me/237678032782" class="btn">Contactez-nous sur WhatsApp</a>
+        </div>
+    </section>
+
+    <!-- PRODUITS -->
+    <section class="section" id="produits">
+        <h2>Nos Équipements Professionnels</h2>
+        <div class="products">
+            <!-- Compteuses -->
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=PLUS+P30" alt="Compteuse PLUS P30">
+                <h3>Compteuse PLUS P30</h3>
+                <p>Compteuse professionnelle haute vitesse, détection UV/MG/IR, capacité 300 billets. Idéale pour les institutions financières.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20compteuse%20PLUS%20P30" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=KISAN+NT3" alt="Compteuse KISAN NT3">
+                <h3>Compteuse KISAN NT3</h3>
+                <p>Comptage rapide, détection de faux, écran LCD, facile à utiliser. Parfaite pour les commerces et PME.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20compteuse%20KISAN%20NT3" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=MAGNER+1500" alt="Compteuse MAGNER 1500">
+                <h3>Compteuse MAGNER 1500</h3>
+                <p>Compteuse haut de gamme, détection multiple, grande capacité. La référence pour les banques.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20compteuse%20MAGNER%201500" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=LIDIX+SL3" alt="Compteuse LIDIX SL3">
+                <h3>Compteuse LIDIX SL3</h3>
+                <p>Compacte et efficace, idéale pour petits commerces et bureaux de change.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20compteuse%20LIDIX%20SL3" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <!-- Trieuses -->
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=KISAN+K5A" alt="Trieuse KISAN K5A">
+                <h3>Trieuse KISAN K5A</h3>
+                <p>Trieuse automatique, détection des contrefaçons, 6 directions de tri. Pour un traitement efficace des volumes importants.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20trieuse%20KISAN%20K5A" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=LIDIX+GL" alt="Trieuse LIDIX GL SERIE">
+                <h3>Trieuse LIDIX GL SERIE</h3>
+                <p>Trieuse professionnelle grande capacité, écran tactile, multifonctions.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20trieuse%20LIDIX%20GL%20SERIE" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <!-- Autres équipements -->
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=P413" alt="Cercleuse P413">
+                <h3>Cercleuse de billets P413</h3>
+                <p>Machine à cercleuser les billets, rapide et sécurisée pour la mise en liasses.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20cercleuse%20P413" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=SEIKO+TP50" alt="Horodateur SEIKO TP50">
+                <h3>Horodateur SEIKO TP50</h3>
+                <p>Horodateur professionnel, impression date et heure sur documents.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20l%27horodateur%20SEIKO%20TP50" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=EC12" alt="Gaufreuse EC12">
+                <h3>Gaufreuse de chèques EC12</h3>
+                <p>Gaufreuse manuelle pour chèques, sécurisée et conforme aux normes bancaires.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20gaufreuse%20EC12" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=S5" alt="Borne S5">
+                <h3>Borne de remise chèques S5</h3>
+                <p>Borne automatique pour dépôt de chèques, idéale pour les banques.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20borne%20S5" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=AD818" alt="Détecteur AD818">
+                <h3>Détecteur de faux billets AD818</h3>
+                <p>Détection UV, magnétique et infrarouge pour une sécurité maximale.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20le%20détecteur%20AD818" class="btn-devis">📱 Demander devis</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/400x220/138A36/ffffff?text=ALISEA+15A" alt="Caisse ALISEA 15A">
+                <h3>Caisse temporisée ALISEA 15A</h3>
+                <p>Caisse à temporisation, sécurité renforcée pour la protection des fonds.</p>
+                <a href="https://wa.me/237678032782?text=Bonjour%2C%20je%20souhaite%20des%20informations%20sur%20la%20caisse%20ALISEA%2015A" class="btn-devis">📱 Demander devis</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="section services" id="services">
+        <h2>Nos Services</h2>
+        <div class="service-grid">
+            <div class="service-box">
+                <h3>Fourniture & Installation</h3>
+                <p>Distribution d'équipements professionnels pour front et back office. Installation par nos techniciens certifiés.</p>
+            </div>
+            <div class="service-box">
+                <h3>Service Après-Vente</h3>
+                <p>Maintenance préventive et curative, diagnostic et assistance technique rapide. Interventions possibles partout, frais de déplacement à la charge du client.</p>
+            </div>
+            <div class="service-box">
+                <h3>Formation</h3>
+                <p>Formation de vos équipes à l'utilisation des équipements pour une efficacité maximale.</p>
+            </div>
+            <div class="service-box">
+                <h3>Conseil</h3>
+                <p>Accompagnement personnalisé pour choisir les solutions adaptées à votre activité.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- POURQUOI NOUS CHOISIR -->
+    <section class="section why-us" id="pourquoi">
+        <h2>Pourquoi nous choisir ?</h2>
+        <div class="why-grid">
+            <div class="why-item">
+                <div class="why-icon">✓</div>
+                <h3>Expertise reconnue</h3>
+                <p>Plus de 10 ans d'expérience dans le secteur de la manipulation de fonds (depuis 2013).</p>
+            </div>
+            <div class="why-item">
+                <div class="why-icon">⚡</div>
+                <h3>SAV réactif</h3>
+                <p>Assistance technique rapide et efficace, avec intervention sur site (frais de déplacement à la charge du client).</p>
+            </div>
+            <div class="why-item">
+                <div class="why-icon">🔧</div>
+                <h3>Installation incluse</h3>
+                <p>Nous installons et formons vos équipes sur tous nos équipements.</p>
+            </div>
+            <div class="why-item">
+                <div class="why-icon">📞</div>
+                <h3>Support WhatsApp</h3>
+                <p>Assistance directe par WhatsApp pour répondre à vos questions rapidement.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+        <h2>Contactez-nous</h2>
+        <form class="contact-form" action="https://formspree.io/f/votre-identifiant" method="POST">
+            <input type="text" name="name" placeholder="Nom complet" required>
+            <input type="tel" name="phone" placeholder="Téléphone (WhatsApp de préférence)" required>
+            <input type="email" name="email" placeholder="Email professionnel" required>
+            <select name="subject" required>
+                <option value="" disabled selected>Sujet de votre demande</option>
+                <option value="devis">Demande de devis</option>
+                <option value="info">Information produit</option>
+                <option value="sav">Service après-vente</option>
+                <option value="autre">Autre</option>
+            </select>
+            <textarea name="message" placeholder="Détail de votre demande" rows="5" required></textarea>
+            <button class="btn" type="submit">Envoyer la demande</button>
+        </form>
+    </section>
+
+    <!-- BOUTONS FLOTTANTS -->
+    <div class="floating-buttons">
+        <a href="https://wa.me/237678032782" class="floating-btn btn-whatsapp" target="_blank">💬</a>
+        <a href="tel:+237678032782" class="floating-btn btn-call">📞</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <h3>ERO SARL</h3>
+                <p>Solutions professionnelles de manipulation de fonds depuis 2013.</p>
+                <p>Votre partenaire de confiance pour l'équipement financier.</p>
+            </div>
+            <div>
+                <h3>Contact</h3>
+                <p>📞 <a href="tel:+237678032782">+237 678 032 782</a></p>
+                <p>📧 <a href="mailto:electronalds-offspring@erosarl.com">electronalds-offspring@erosarl.com</a></p>
+                <p>📍 83 rue Jebale, Rond Point Deido, Douala</p>
+            </div>
+            <div>
+                <h3>Horaires</h3>
+                <p>Lundi - Vendredi: 8h00 - 17h30</p>
+                <p>Samedi: Fermé</p>
+                <p>Dimanche: Fermé</p>
+            </div>
+            <div>
+                <h3>Liens rapides</h3>
+                <p><a href="#produits">Nos produits</a></p>
+                <p><a href="#services">Nos services</a></p>
+                <p><a href="#contact">Contact</a></p>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2026 ERO SARL | Tous droits réservés | Depuis 2013
+        </div>
+    </footer>
+
+    <script>
+        // Loader
+        window.addEventListener('load', () => {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+            }, 500);
+        });
+
+        // Effet apparition au scroll
+        const sections = document.querySelectorAll('.section');
+
+        window.addEventListener('scroll', () => {
+            sections.forEach(section => {
+                const top = section.getBoundingClientRect().top;
+                if(top < window.innerHeight - 100){
+                    section.classList.add('visible');
+                }
+            });
+
+            // Header scrolled effect
+            if(window.scrollY > 50){
+                document.getElementById("header").classList.add("scrolled");
+            } else {
+                document.getElementById("header").classList.remove("scrolled");
+            }
+        });
+
+        // Menu burger
+        function toggleMenu() {
+            document.querySelector('nav').classList.toggle('active');
+        }
+
+        // Fermer le menu quand on clique sur un lien
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('nav').classList.remove('active');
+            });
+        });
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
